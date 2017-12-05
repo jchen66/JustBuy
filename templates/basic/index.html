@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Project Index</title>
+</head>
+<body>
+    {% if session.get('uid') != None %}
+        Hello, {{ session.get('username') }}<br/>
+        <a href="{{ url_for('renderLogout').replace(request.script_root,'') }}">Log out</a><br/>
+        <a href="{{ url_for('renderPostItemForm').replace(request.script_root,'') }}">Post Item</a><br/>
+    {% else %}
+        <a href="{{ url_for('renderLoginForm').replace(request.script_root,'') }}">Log in</a><br/>
+        <a href="{{ url_for('renderRegisterForm').replace(request.script_root,'') }}">Register</a><br/>
+    {% endif %}
+
+</body>
+</html>

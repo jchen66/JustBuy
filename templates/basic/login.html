@@ -1,0 +1,13 @@
+﻿<html>
+    <head>
+        <title>Login</title>
+        <meta charset="utf-8" />
+    </head>
+    <body>
+        <form id="form" method="post" action="{{ url_for('receiveLoginUser').replace(request.script_root,'') }}">
+            <label>Username: </label><input type="text" minlength="8" maxlength="32" id="username" name="username" placeholder="Username" required/>
+            <label>Password: </label><input type="password" minlength="8" maxlength="64" id="password" name="password" placeholder="Password" required/><br />
+            <input type="submit" value="Submit" />
+        </form>
+    </body>
+</html>

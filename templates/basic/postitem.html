@@ -1,0 +1,15 @@
+﻿<html>
+    <head>
+        <title>New Item</title>
+        <meta charset="utf-8" />
+    </head>
+    <body>
+        <form id="form" method="post" enctype="multipart/form-data" action="{{ url_for('receiveRegisterItem').replace(request.script_root,'') }}">
+            <label>Name:</label><br/><input type="text" id="name" name="name" minlength="4" maxlength="256" required/><br/>
+            <label>Price:</label><br/><input type="number" min="0" id="price" name="price" required/><br/>
+            <label>Description:</label><br/><textarea id="description" name="description" maxlength="65535"></textarea></br>
+            <label>Image:</label><br/><input type="file" accept="image/png, image/jpeg" id="img" name="img" required/></br>
+            <input type="submit" value="Submit" />
+        </form>
+    </body>
+</html>
