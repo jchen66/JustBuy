@@ -3,13 +3,11 @@ from flask import Flask, jsonify, render_template, url_for, redirect, Request, s
 from tools import *
 import bcrypt, re, random, string, os, sys
 
-
 app = Flask("application")
 app.config["SSL"] = True
 app.config["SECRET_KEY"] = '\xf9s\xb1\xa1\xae(\xf0Z\x0c\\\xd3*\x07\x8e\xc6\xc0_\x84y\x83\xab\xc6`/\x0f6\xe7\xab%O\xb2\x99j\xbc\xe5\x99\xe1\x87\x1c.\xec,\xb0\xc6\x8bu\xb4\xe4\\\x0b\xabf\xdc\xf8:\xfa\xcdk/\xe4\xe0\xd4WF\x1b\xa6\x8e\x82\x9c(\x91\xc2\xca*\x98\x0f\xccR\x9d\xd4\xfa=\xf8\x8b\xea\xc8\xf0uG@!\x8ao\xa5Ra\\\xde\x06-Q\x8e\x9e9\xf1\xe9\xe1e\x14\xe7nU\x03J\x1f\x0e"\xa5\xb7\xfa\xb2OE\xa8A\xd0`@'
 IMAGE_FOLDER = "img"
 IMAGE_EXTENSIONS = ["png", "jpg", "jpeg"]
-ITEM_CATEGORIES = ['clothes', 'electronics', 'food', 'animals', 'furniture', 'miscellaneous']
 
 @app.route('/')
 @ssl_required
@@ -36,27 +34,6 @@ def JSONRequestInventory():
 	resp = { "items" : getColumnsFromTable('items', all=True, where='`user` =' + str(session['uid'])) }
 	return jsonify(resp)
 
-@app.route('/deleteitem', methods=['POST'])
-@ssl_required
-@login_required
-def receiveDeleteItem():
-	resp = { 'success':False }
-	try:
-		id = int(request.form.get('id'))
-
-		if session['uid'] != getColumnsFromTable('items', 'user', where='`id` =' + str(id))[0]['user']:
-			resp['success'] = False
-			return jsonify(resp)
-
-		deleteItemFromDB(id)
-		resp['success'] = True
-
-	except Exception as e:
-		raise e
-		resp['success'] = False
-
-	return jsonify(resp)
-
 @app.route('/browse', methods=['GET'])
 @ssl_required
 @login_required
@@ -67,18 +44,7 @@ def renderSearchForm():
 @ssl_required
 @login_required
 def receiveSearchForm():
-	resp = { 'items':[] }
-	try:
-		query = re.split('[^a-zA-Z]', request.form.get('query'))
-		price = int(request.form.get('price')) if request.form.get('price') else sys.maxsize
-		category = request.form.get('category') if request.form.get('category') in ITEM_CATEGORIES else "all"
-
-		resp['items'] = searchItemsInDB(query, category, price)
-
-	except Exception as e:
-		raise e
-
-	return jsonify(resp)
+	raise Exception("receiveSearchForm not implemented.")
 
 @app.route('/logout')
 @ssl_required
@@ -120,9 +86,10 @@ def receiveRegisterItem():
 	elif imgfile.filename.split('.', 1)[1].lower() not in IMAGE_EXTENSIONS:
 		result.append("Invalid file extension")
 
-	if category not in ITEM_CATEGORIES:
+	if category not in ['clothes', 'electronics', 'food', 'animals', 'furniture', 'miscellaneous']:
 		result.append("Invalid category")
 
+	#Also for debugging
 	if not result:
 		registerItemToDB(name, price, description, imgfile, session.get('uid'), category)
 	else:
@@ -180,24 +147,6 @@ def receiveRegisterUser():
 	session['username'] = username
 
 	return onValid()
-
-def searchItemsInDB(query, category, price):
-	items = getColumnsFromTable('items', all=True)
-	result = []
-	for item in items:
-		text = item['name'] + " " + item['description']
-		if item['price'] <= price and (item['category'] == category or category == "all"):
-			if any(re.search(word, text) for word in query):
-				result.append(item)
-	return result
-
-def deleteItemFromDB(id):
-	db = getDB()
-	cursor = db.cursor()
-	sql = "DELETE FROM `items` WHERE `id`=%s"
-	cursor.execute(sql, (id))
-	db.commit()
-	db.close()
 
 def registerUserToDB(username, password):
 	cryptpass = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt( 12 ))

@@ -47,7 +47,7 @@ txtOnImg{
             <li><a href="{{ url_for('renderLogout').replace(request.script_root,'') }}">Log out</a></li>
             <li><a href="{{ url_for('renderPostItemForm').replace(request.script_root,'') }}">Post Item</a></li>
             <li><a href="{{ url_for('renderProfile').replace(request.script_root,'') }}" >Profile</a></li>
-            <li><a href="{{ url_for('renderSearchForm').replace(request.script_root,'') }}">Browse</a></li>
+            <li><a href="{{ url_for('renderSearchForm').replace(request.script_root,'') }}">Purchase</a></li>
         {% else %}
             <li><a href="{{ url_for('renderLoginForm').replace(request.script_root,'') }}">Log in</a></li>
             <li><a href="{{ url_for('renderRegisterForm').replace(request.script_root,'') }}">Register</a></li>
@@ -66,21 +66,20 @@ txtOnImg{
 
 <div class="about-container" >                
     <div class="about-search" id="about">
-        <center><h3 class="about-title">Browse</h3></center>
+        <center><h3 class="about-title">Trade</h3></center>
         <center>
-          <form id="form" method="post" action="{{ url_for('receiveSearchForm').replace(request.script_root,'') }}">
-            <label>Search: &nbsp;</label><input type="text" id="query" name="query" minlength="0" maxlength="256"  size="65" required/><br/>
+          <form id="form" method="post" enctype="multipart/form-data" action="{{ url_for('receiveSearchForm').replace(request.script_root,'') }}">
+            <label>Item Name: &nbsp;</label><input type="text" id="name" name="name" minlength="4" maxlength="256"  size="65" required/><br/>
             </br>
-            <label>Maximum Price: &nbsp;</label><input type="number" min="0" id="maxPrice" name="maxPrice" /><br/>
+            <label>Maximum Price: &nbsp;</label><input type="number" min="0" id="maxPrice" name="maxPrice" required/><br/>
             </br>
             <label>Categories: &nbsp;</label></br>
-              <input type="radio" name="category" value="any" checked> Any<br>
               <input type="radio" name="category" value="clothes"> Clothes<br>
               <input type="radio" name="category" value="electronics"> Electronics<br>
               <input type="radio" name="category" value="food"> Food<br>
               <input type="radio" name="category" value="animals"> Animals<br>
               <input type="radio" name="category" value="furniture"> Furniture<br>
-              <input type="radio" name="category" value="miscellaneous"> Miscellaneous<br>
+              <input type="radio" name="category" value="miscellaneous" checked> Miscellaneous<br>
               <br>
             <input type="submit" value="Search" />
         </form>

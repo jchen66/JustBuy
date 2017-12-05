@@ -7,11 +7,7 @@
             <img src="{{ item['imgurl'] }}"><br/>
             <b>Details:</b><br/>
             {{ item['description'] }}<br/><br/>
-            <b>Category: </b>{{ item['category'] }}<br/>
-            <form id="form" method="post" action="{{ url_for('receiveDeleteItem').replace(request.script_root,'') }}">
-                <input type="hidden" id="id" name="id" value="{{ item['ID'] }}" required>
-                <input type="submit" value="Delete"/>
-            </form><br/><br/><br/>
+            <b>Category: </b>{{ item['category'] }}<br/><br/><br/>
         </div>
     {% endfor %}
     {% if not items %} You have no items. {% endif %}
