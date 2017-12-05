@@ -68,7 +68,7 @@ txtOnImg{
     <div class="about-search" id="about">
         <center><h3 class="about-title">Trade</h3></center>
         <center>
-          <form id="form" method="post" enctype="multipart/form-data" action="{{ url_for('receiveSearchForm').replace(request.script_root,'') }}">
+          <form id="form" method="post" enctype="multipart/form-data" action="searchTrade.php">
             <label>Item Name: &nbsp;</label><input type="text" id="name" name="name" minlength="4" maxlength="256"  size="65" required/><br/>
             </br>
             <label>Maximum Price: &nbsp;</label><input type="number" min="0" id="maxPrice" name="maxPrice" required/><br/>
