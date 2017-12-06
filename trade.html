@@ -43,16 +43,18 @@ txtOnImg{
           url:"{{ url_for('receiveSearchForm').replace(request.script_root,'') }}",
           type:'POST',
           data: $('form').serialize(),
-          success:function(data){
-            $('#searchItems').empty();
-            if(data.items && data.items.length){
-              for(var item in data.items){
-                $('#searchItems').append("<div class='post-container'><h4 class='post-title'>"+jsonData[i].name+"</h3> <div class='post-thumb'><img src='"+jsonData[i].imgurl+"'/></div>"+"<div class='post-content'>"+jsonData[i].description+"<br> Price:"+jsonData[i].price+"<br> seller:"+jsonData[i].user+"</div></div>");
-              }
-            }
-            else{
-              $('#searchItems').append("<div class='post-container'>No items found.</div>");
-            }
+          success: function(data){
+                    $('#searchItems').empty();
+                    if(data.items && data.items.length){
+                      for(var item in data.items){
+                        $('#searchItems').append("<div class='post-container'><h4 class='post-title'> $"+data.items[item].price+" - "+data.items[item].name+"</h3> <div class='post-thumb'><img src='"+data.items[item].imgurl+"'/></div>"+"<div class='post-content'>"+data.items[item].description+"<br> Seller:"+data.items[item].user+"</div></div>");
+                        }
+                    }
+                    else {
+                        $('#searchItems').append("<div class='post-container'>No items found.</div>");
+                    }
+                },
+          error: function(data){
           }
 
         });
@@ -108,7 +110,7 @@ txtOnImg{
               <input type="radio" name="category" value="miscellaneous"> Miscellaneous<br>
               <br>
               <!--used ascii for the quotationmark problem-->
-            <input type="submit" id="searchBtn" value="Search" onclick="searchItem('{{ url_for(&quot;receiveSearchForm &quot;).replace(request.script_root,'') }}'')"/>
+            <input type="submit" id="searchBtn" value="Search" />
         </form>
       </center>
     </div>
