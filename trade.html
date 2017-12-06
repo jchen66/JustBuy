@@ -50,6 +50,7 @@ txtOnImg{
             //if there are many results---> for loop to get more of them
             if (data instanceof Array){
               for(var i=0; i<jsonData.length;i++){
+
                 $('#searchItems').append("<div class='post-container'><h4 class='post-title'>"+jsonData[i].name+"</h3> <div class='post-thumb'><img src='"+jsonData[i].imgurl+"'/></div>"+"<div class='post-content'>"+jsonData[i].description+"<br> Price:"+jsonData[i].price+"<br> seller:"+jsonData[i].user+"</div></div>");
               }
             }
@@ -119,13 +120,15 @@ txtOnImg{
               <input type="radio" name="category" value="furniture"> Furniture<br>
               <input type="radio" name="category" value="miscellaneous"> Miscellaneous<br>
               <br>
-            <input type="submit" id="searchBtn" value="Search" />
+              <!--used ascii for the quotationmark problem-->
+            <input type="submit" id="searchBtn" value="Search" onclick="searchItem('{{ url_for(&quot;receiveSearchForm &quot;).replace(request.script_root,'') }}'')"/>
         </form>
       </center>
     </div>
 </div>
-
-<>
+<div id="searchItems">
+  <!--update new data-->
+</div>
 <div>
 <br>
 <br>

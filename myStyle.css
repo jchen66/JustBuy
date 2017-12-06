@@ -452,7 +452,10 @@ img{
     background: #ccc;
     font-family:'Geneva',sans-serif;
 }
-
+#searchItems{
+	background:white;
+	width:100%;
+}
 .project-header{
 	font-weight:bold;
 	font-size:50px;
