@@ -55,7 +55,8 @@ txtOnImg{
               }
             }
             else{
-
+              //only one obj, don't need to loop
+              $('#searchItems').append("<div class='post-container'><h4 class='post-title'>"+jsonData.name+"</h3> <div class='post-thumb'><img src='"+jsonData.imgurl+"'/></div>"+"<div class='post-content'>"+jsonData.description+"<br> Price:"+jsonData.price+"<br> seller:"+jsonData.user+"</div></div>");
             }
           },
 
