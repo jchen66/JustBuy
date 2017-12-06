@@ -71,7 +71,7 @@ txtOnImg{
           <form id="form" method="post" action="{{ url_for('receiveSearchForm').replace(request.script_root,'') }}">
             <label>Search: &nbsp;</label><input type="text" id="query" name="query" minlength="0" maxlength="256"  size="65" required/><br/>
             </br>
-            <label>Maximum Price: &nbsp;</label><input type="number" min="0" id="maxPrice" name="maxPrice" /><br/>
+            <label>Maximum Price: &nbsp;</label><input type="number" min="0" id="price" name="price" /><br/>
             </br>
             <label>Categories: &nbsp;</label></br>
               <input type="radio" name="category" value="any" checked> Any<br>
