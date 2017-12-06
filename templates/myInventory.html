@@ -116,7 +116,7 @@ textarea {
             <li><a href="{{ url_for('renderLogout').replace(request.script_root,'') }}">Log out</a></li>
             <li><a href="{{ url_for('renderPostItemForm').replace(request.script_root,'') }}">Post Item</a></li>
             <li><a href="{{ url_for('renderProfile').replace(request.script_root,'') }}" >Profile</a></li>
-            <li><a href="{{ url_for('renderSearchForm').replace(request.script_root,'') }}">Purchase</a></li>
+            <li><a href="{{ url_for('renderSearchForm').replace(request.script_root,'') }}">Browse</a></li>
         {% else %}
             <li><a href="{{ url_for('renderLoginForm').replace(request.script_root,'') }}">Log in</a></li>
             <li><a href="{{ url_for('renderRegisterForm').replace(request.script_root,'') }}">Register</a></li>
@@ -143,10 +143,57 @@ textarea {
     <div class="container">
         <div class="row">
             <div class="col-md-8 text-center">
-                <button id="test" onclick="changeText()">List all my items</button>
-                <h2>MY ITEMMMSSSS</h2>
+                <!--<button id="test" onclick="changeText()">List all my items</button>-->
 
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script type="application/javascript">
+    $(document).ready(function(){
+        $.ajax({
+            url:"{{ url_for('JSONRequestInventory').replace(request.script_root,'') }}",
+            type:'GET',
+            async:false,
+            success: function(data){
 
+                $('#searchItems').empty();
+                if(data.items && data.items.length){
+                    for(var item in data.items){
+                        $('#inventoryItems').append("<div class='post-container'><h4 class='post-title'> $"+data.items[item].price+" - "+data.items[item].name+"</h3> <div class='post-thumb'><img src='"+data.items[item].imgurl+"'/></div>"+"<div class='post-content'>"+data.items[item].description+"<br>"
+
+                        +'<form method="post" action=""><input type="hidden" id="id" name="id" value=' + data.items[item].ID + ' required><input type="submit" value="Delete"/></form>'
+                        +"</div></div>");
+                    }
+                }
+                else {
+                    $('#inventoryItems').append("<div class='post-container'>No items found.</div>");
+                }
+            },
+            error: function(data){
+            }
+        });
+
+        $("form").submit(function(e){
+            var element = $(this)
+            $.ajax({
+                url:"{{ url_for('receiveDeleteItem').replace(request.script_root,'') }}",
+                type:'POST',
+                data: $(this).serialize(),
+                success: function(data){
+                    if(data.success == true){
+                        if($('.post-container').length == 1){
+                            element = element.closest('.post-container');
+                            element.empty();
+                            element.append("No items found.");
+                        }
+                        else{
+                            element.closest('.post-container').remove();
+                        }
+                    }
+                }
+            });
+            e.preventDefault();
+        });
+    });
+  </script>
 
 <script>
 // Get the modal
@@ -198,8 +245,9 @@ function changeText()
     <br>
 </section>
 
-
-
+<div id="inventoryItems">
+  <!--update new data-->
+</div>
 
 <div>
 <br>
@@ -230,22 +278,3 @@ function changeText()
 
 </body>
 </html>
-
-
-
-
-{% extends "layout.html" %}
-{% block content %}
-<center><h3 class="about-title">Your Items</h3>
-    {% for item in items %}
-        <div class="row" style="background-color: beige; border-bottom: solid black; border-top: solid black;">
-            <h4>{{ item['name'] + " - $" + item['price']|string }}</h4>
-            <img src="{{ item['imgurl'] }}"><br/>
-            <b>Details:</b><br/>
-            {{ item['description'] }}<br/><br/>
-            <b>Category: </b>{{ item['category'] }}<br/><br/><br/>
-        </div>
-    {% endfor %}
-    {% if not items %} You have no items. {% endif %}
-</center>
-{% endblock %}

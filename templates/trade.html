@@ -34,21 +34,21 @@ txtOnImg{
 <head>
     <link rel="stylesheet" type="text/css" href="myStyle.css">
     <script src="https://use.fontawesome.com/328c9f9740.js"></script>
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script type="application/javascript">
     $(document).ready(function(){
         $("form").submit(function(e){
             $.ajax({
                 url:"{{ url_for('receiveSearchForm').replace(request.script_root,'') }}",
                 type:'POST',
-                data: $('form').serialize(),
+                data: $(this).serialize(),
                 success: function(data){
                     $('#searchItems').empty();
                     if(data.items && data.items.length){
                         for(var item in data.items){
-                            $('#searchItems').append("<div class='post-container'><h4 class='post-title'>"+data.items[item].name+"</h3> <div class='post-thumb'><img src='"+data.items[item].imgurl+"'/></div>"+"<div class='post-content'>"+data.items[item].description+"<br> Price:"+data.items[item].price+"<br> seller:"+data.items[item].user+"</div></div>");
+                            $('#searchItems').append("<div class='post-container'><h4 class='post-title'> $"+data.items[item].price+" - "+data.items[item].name+"</h3> <div class='post-thumb'><img src='"+data.items[item].imgurl+"'/></div>"+"<div class='post-content'>"+data.items[item].description+"<br> Seller:"+data.items[item].user+"</div></div>");
                         }
                     }
                     else {
