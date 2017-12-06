@@ -32,48 +32,33 @@ txtOnImg{
 
 
 <head>
-  <link rel="stylesheet" type="text/css" href="myStyle.css">
-  <script src="https://use.fontawesome.com/328c9f9740.js"></script>
-  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
-  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
-  <script type="application/javascript">
-    function getInfo(sourceUrl){
-      var json=null;
-      $.ajax(
-          url:sourceUrl,
-          type:'GET',
-          dataType:'json',
-          async:false;
-          success: function(data){
-            var jsonData=data;
-            //data is downloaded as json obj
-            //if there are many results---> for loop to get more of them
-            if (data instanceof Array){
-              for(var i=0; i<jsonData.length;i++){
-
-                $('#searchItems').append("<div class='post-container'><h4 class='post-title'>"+jsonData[i].name+"</h3> <div class='post-thumb'><img src='"+jsonData[i].imgurl+"'/></div>"+"<div class='post-content'>"+jsonData[i].description+"<br> Price:"+jsonData[i].price+"<br> seller:"+jsonData[i].user+"</div></div>");
-              }
-            }
-            else{
-              //only one obj, don't need to loop
-              $('#searchItems').append("<div class='post-container'><h4 class='post-title'>"+jsonData.name+"</h3> <div class='post-thumb'><img src='"+jsonData.imgurl+"'/></div>"+"<div class='post-content'>"+jsonData.description+"<br> Price:"+jsonData.price+"<br> seller:"+jsonData.user+"</div></div>");
-            }
-          },
-
-      );
-
-    }
-    function searchItem(){
-      var dataFile="{{ url_for('receiveSearchForm').replace(request.script_root,'') }}";
-
-      var http_request= new XMLHttpRequest();
-
-      var data=getInfo(urlSource);
-
-      var json=JSON.parse(data);
-
-
-    }
+    <link rel="stylesheet" type="text/css" href="myStyle.css">
+    <script src="https://use.fontawesome.com/328c9f9740.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
+    <script type="application/javascript">
+    $(document).ready(function(){
+        $("form").submit(function(e){
+            $.ajax({
+                url:"{{ url_for('receiveSearchForm').replace(request.script_root,'') }}",
+                type:'POST',
+                data: $('form').serialize(),
+                success: function(data){
+                    $('#searchItems').empty();
+                    if(data.items && data.items.length){
+                        for(var item in data.items){
+                            $('#searchItems').append("<div class='post-container'><h4 class='post-title'>"+data.items[item].name+"</h3> <div class='post-thumb'><img src='"+data.items[item].imgurl+"'/></div>"+"<div class='post-content'>"+data.items[item].description+"<br> Price:"+data.items[item].price+"<br> seller:"+data.items[item].user+"</div></div>");
+                        }
+                    }
+                    else {
+                        $('#searchItems').append("<div class='post-container'>No items found.</div>");
+                    }
+                }
+            });
+            e.preventDefault();
+        });
+    });
   </script>
 
   <title>Search</title>
