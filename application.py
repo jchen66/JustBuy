@@ -74,6 +74,9 @@ def receiveSearchForm():
 
 		resp['items'] = searchItemsInDB(query, category, price)
 
+		for item in resp['items']:
+			item['user'] = getColumnsFromTable('users', 'username', where="id = " + str(item['user']))[0]['username']
+
 	except Exception as e:
 		raise e
 

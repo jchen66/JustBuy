@@ -54,6 +54,9 @@ txtOnImg{
                     else {
                         $('#searchItems').append("<div class='post-container'>No items found.</div>");
                     }
+                },
+                error: function(data){
+
                 }
             });
             e.preventDefault();
