@@ -1,3 +1,239 @@
+<!DOCTYPE html>
+<html>
+<style>
+mark{
+  background-image: url(white_bg.jpg);
+  padding: 20px;
+  margin:20px;
+  text-align:center;
+  width:50%;
+  position:relative;
+  background-size: 100px 100px;
+} 
+gameName{
+  font-size:35px;
+  font-weight:bold;
+  color: #353535;
+  font-family:'Brush Script MT',cursive;
+  display:inline-block;
+  padding-left:20px;
+  padding-top:10px;}
+
+txtOnImg{
+  position:absolute;
+  text-align: center;
+  vertical-align: middle;
+  color:white;
+  font-size:50px;
+  font-family:'Brush Script MT',cursive;
+  font-weight: bold;
+}
+textarea {
+    width:50em;
+    height: 150px;
+    padding: 12px 20px;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    background-color: #f8f8f8;
+    font-size: 16px;
+    resize: none;
+}
+.mail {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.5); /* Black w/ opacity */
+    animation-name: fadeIn;
+    animation-duration: 0.5s
+}
+
+/* Modal Content */
+.mail-content {
+    position: fixed;
+    bottom: 0;
+    color: #B1B1B1;
+    background-color: white;
+    width: 100%;
+    -webkit-animation-name: slideIn;
+    -webkit-animation-duration: 0.4s;
+    animation-name: slideIn;
+    animation-duration: 0.4s
+}
+
+/* The Close Button */
+.close {
+    color: white;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.mail-header {
+    padding: 2px 16px;
+    background-color: white;
+}
+
+.mail-body {
+    padding: 2px 16px;
+    color:black;
+
+}
+
+.mail-footer {
+    padding: 2px 16px;
+    color: black;
+}
+
+</style>
+
+
+<head>
+  <link rel="stylesheet" type"text/css" href="myStyle.css">
+  <script src="https://use.fontawesome.com/328c9f9740.js"></script>
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
+  <title>Your Profile</title>
+  
+</head>
+<div>
+    <ul id="main_nav">
+      {% if session.get('uid') != None %}
+            <li><a>Hello, {{ session.get('username') }}</a></li>
+            <li><a href="{{ url_for('renderLogout').replace(request.script_root,'') }}">Log out</a></li>
+            <li><a href="{{ url_for('renderPostItemForm').replace(request.script_root,'') }}">Post Item</a></li>
+            <li><a href="{{ url_for('renderProfile').replace(request.script_root,'') }}" >Profile</a></li>
+            <li><a href="{{ url_for('renderSearchForm').replace(request.script_root,'') }}">Purchase</a></li>
+        {% else %}
+            <li><a href="{{ url_for('renderLoginForm').replace(request.script_root,'') }}">Log in</a></li>
+            <li><a href="{{ url_for('renderRegisterForm').replace(request.script_root,'') }}">Register</a></li>
+        {% endif %}
+      <li style="float:left;padding-top: 0px; padding-bottom:0px;"><gameName>    Just Buy</gameName></li>
+    </ul>
+</div>
+<body>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br><div class="col-md-4 text-center">
+                <h1>My Inventory</h1>
+                <p id="messOutput"></p>
+            </div>
+
+</br>
+</br>
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 text-center">
+                <button id="test" onclick="changeText()">List all my items</button>
+                <h2>MY ITEMMMSSSS</h2>
+
+
+
+<script>
+// Get the modal
+var mail_ = document.getElementById('myMail');
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal 
+btn.onclick = function() {
+    mail_.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+    mail_.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == mail_) {
+        mail_.style.display = "none";
+    }
+}
+/*
+function onClickSendMail(){
+  var xhttp= new XMLHttpRequest();
+  xhttp.onreadystatechange= function(){
+    if(this.readyState==4 && this.status==200){
+      document.getElementById("messOutput").innerHTML=this.responseText;
+    }
+  };
+  xhttp.open("GET","messageSent.txt",true);
+  xhttp.send();
+  }
+*/
+function changeText()
+{
+  alert("Message Sent!");
+}
+</script>
+            </div>
+        </div><!--end row-->
+    </div><!--end container-->
+    <br>
+    <br>
+</section>
+
+
+
+
+<div>
+<br>
+<br>
+<br>
+</div>
+<div class="contactUs">
+  <span> <p style="font-family: 'Geneva',sans-serif;" id="contact">CONTACT US</p></span>
+</div>
+<br>
+
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 text-center">
+                <a href="https://github.com/jchen66/Trade-Live"><p><i class="fa fa-github fa-4x"></i></p>
+                Check our Code</a>
+            </div>
+            <div class="col-md-6 text-center">
+                <a href = "mailto:jiayin.chen66@gmail.com"><p><i class="fa fa-envelope-o fa-4x"></i></p>
+                Email Us</a>
+            </div>
+        </div><!--end row-->
+    </div><!--end container-->
+    <br>
+    <br>
+</section>
+
+</body>
+</html>
+
+
+
+
 {% extends "layout.html" %}
 {% block content %}
 <center><h3 class="about-title">Your Items</h3>
@@ -7,11 +243,7 @@
             <img src="{{ item['imgurl'] }}"><br/>
             <b>Details:</b><br/>
             {{ item['description'] }}<br/><br/>
-            <b>Category: </b>{{ item['category'] }}<br/>
-            <form id="form" method="post" action="{{ url_for('receiveDeleteItem').replace(request.script_root,'') }}">
-                <input type="hidden" id="id" name="id" value="{{ item['ID'] }}" required>
-                <input type="submit" value="Delete"/>
-            </form><br/><br/><br/>
+            <b>Category: </b>{{ item['category'] }}<br/><br/><br/>
         </div>
     {% endfor %}
     {% if not items %} You have no items. {% endif %}

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<style>
+mark{
+  background-image: url(white_bg.jpg);
+  padding: 20px;
+  margin:20px;
+  text-align:center;
+  width:50%;
+  position:relative;
+  background-size: 100px 100px;
+} 
+gameName{
+  font-size:35px;
+  font-weight:bold;
+  color: #353535;
+  font-family:'Brush Script MT',cursive;
+  display:inline-block;
+  padding-left:20px;
+  padding-top:10px;}
+txtOnImg{
+  position:absolute;
+  text-align: center;
+  vertical-align: middle;
+  color:white;
+  font-size:50px;
+  font-family:'Brush Script MT',cursive;
+  font-weight: bold;
+}
+</style>
+
+
+
+<head>
+  <link rel="stylesheet" type"text/css" href="myStyle.css">
+  <script src="https://use.fontawesome.com/328c9f9740.js"></script>
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
+  <script type="application/javascript">
+    function getInfo(sourceUrl){
+      var json=null;
+      $.ajax(
+          url:sourceUrl,
+          type:'GET',
+          dataType:'json',
+          async:false;
+          success: function(data){
+            var jsonData=data;
+            //data is downloaded as json obj
+            //if there are many results---> for loop to get more of them
+            if (data instanceof Array){
+              for(var i=0; i<jsonData.length;i++){
+
+                $('#searchItems').append("<div class='post-container'><h4 class='post-title'>"+jsonData[i].name+"</h3> <div class='post-thumb'><img src='"+jsonData[i].imgurl+"'/></div>"+"<div class='post-content'>"+jsonData[i].description+"<br> Price:"+jsonData[i].price+"<br> seller:"+jsonData[i].user+"</div></div>");
+              }
+            }
+            else{
+              //only one obj, don't need to loop
+              $('#searchItems').append("<div class='post-container'><h4 class='post-title'>"+jsonData.name+"</h3> <div class='post-thumb'><img src='"+jsonData.imgurl+"'/></div>"+"<div class='post-content'>"+jsonData.description+"<br> Price:"+jsonData.price+"<br> seller:"+jsonData.user+"</div></div>");
+            }
+          },
+
+      );
+
+    }
+    function searchItem(){
+      var dataFile="{{ url_for('receiveSearchForm').replace(request.script_root,'') }}";
+
+      var http_request= new XMLHttpRequest();
+
+      var data=getInfo(urlSource);
+
+      var json=JSON.parse(data);
+
+
+    }
+  </script>
+
+  <title>Search</title>
+  
+</head>
+<div>
+    <ul id="main_nav">
+        {% if session.get('uid') != None %}
+            <li><a>Hello, {{ session.get('username') }}</a></li>
+            <li><a href="{{ url_for('renderLogout').replace(request.script_root,'') }}">Log out</a></li>
+            <li><a href="{{ url_for('renderPostItemForm').replace(request.script_root,'') }}">Post Item</a></li>
+            <li><a href="{{ url_for('renderProfile').replace(request.script_root,'') }}" >Profile</a></li>
+            <li><a href="{{ url_for('renderSearchForm').replace(request.script_root,'') }}">Browse</a></li>
+        {% else %}
+            <li><a href="{{ url_for('renderLoginForm').replace(request.script_root,'') }}">Log in</a></li>
+            <li><a href="{{ url_for('renderRegisterForm').replace(request.script_root,'') }}">Register</a></li>
+        {% endif %}
+      <li style="float:left;padding-top: 0px; padding-bottom:0px;"><gameName>    Just Buy </gameName></li>
+    </ul>
+</div>
+<body>
+<div class="topImg">
+  <div class="textOnImg" >
+   &nbsp;Welcome to Just Buy&nbsp;
+  </div>
+  <img class="img-responsive" style="padding-top:65px" src="tradetolive1.jpg" >
+</div> 
+
+
+<div class="about-container" >                
+    <div class="about-search" id="about">
+        <center><h3 class="about-title">Browse</h3></center>
+        <center>
+          <form id="form" method="post" action="{{ url_for('receiveSearchForm').replace(request.script_root,'') }}">
+            <label>Search: &nbsp;</label><input type="text" id="query" name="query" minlength="0" maxlength="256"  size="65" required/><br/>
+            </br>
+            <label>Maximum Price: &nbsp;</label><input type="number" min="0" id="price" name="price" /><br/>
+            </br>
+            <label>Categories: &nbsp;</label></br>
+              <input type="radio" name="category" value="any" checked> Any<br>
+              <input type="radio" name="category" value="clothes"> Clothes<br>
+              <input type="radio" name="category" value="electronics"> Electronics<br>
+              <input type="radio" name="category" value="food"> Food<br>
+              <input type="radio" name="category" value="animals"> Animals<br>
+              <input type="radio" name="category" value="furniture"> Furniture<br>
+              <input type="radio" name="category" value="miscellaneous"> Miscellaneous<br>
+              <br>
+              <!--used ascii for the quotationmark problem-->
+            <input type="submit" id="searchBtn" value="Search" onclick="searchItem('{{ url_for(&quot;receiveSearchForm &quot;).replace(request.script_root,'') }}'')"/>
+        </form>
+      </center>
+    </div>
+</div>
+<div id="searchItems">
+  <!--update new data-->
+</div>
+<div>
+<br>
+<br>
+<br>
+</div>
+<div class="contactUs">
+  <span> <p style="font-family: 'Geneva',sans-serif;" id="contact">CONTACT US</p></span>
+</div>
+<br>
+
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 text-center">
+                <a href="https://github.com/jchen66/Trade-Live"><p><i class="fa fa-github fa-4x"></i></p>
+                Check our Code</a>
+            </div>
+            <div class="col-md-6 text-center">
+                <a href = "mailto:jiayin.chen66@gmail.com"><p><i class="fa fa-envelope-o fa-4x"></i></p>
+                Email Us</a>
+            </div>
+        </div><!--end row-->
+    </div><!--end container-->
+    <br>
+    <br>
+</section>
+
+</body>
+</html>
