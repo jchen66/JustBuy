@@ -10,6 +10,21 @@ mark{
   position:relative;
   background-size: 100px 100px;
 } 
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: none;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
 gameName{
   font-size:35px;
   font-weight:bold;
@@ -107,6 +122,31 @@ textarea {
   <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
   <title>Your Profile</title>
+  <script type="application/javascript">
+    $(document).ready(function(){
+      $("form").submit(function(e){
+        $.ajax({
+          url:"{{ url_for('receiveSearchForm').replace(request.script_root,'') }}",
+          type:'POST',
+          data: $('form').serialize(),
+          success:function(data){
+            $('#getMails').empty();
+            if(data.items && data.items.length){
+              for(var item in data.items){
+                $('#getMails').append("<table><tr><th>Sender</th><th>Title</th><th>Content</th></tr><tr><th>"+data.items[item].senderID+"</th><th>"+data.items[item].title+"</th><th>"+data.items[item].senderID.subStr(0,25)+"...</th></tr></table>");
+              }
+            }
+            else{
+              $('#getMails').append("<div class='post-container'>No mails found.</div>");
+            }
+          }
+
+        });
+        e.preventDefault();
+      });
+    });
+
+  </script>
   
 </head>
 <div>
@@ -134,7 +174,6 @@ textarea {
 </br>
 </br><div class="col-md-4 text-center">
                 <h1>My Mail</h1>
-                <p id="messOutput"></p>
             </div>
 
 </br>
@@ -144,17 +183,13 @@ textarea {
         <div class="row">
             <div class="col-md-8 text-center">
                 MY MAILS
-                Username, time sent, title <p id="testing">yooo</p>
-                <button id="test" onclick="changeText()">Try Me</button>
-                <h2>MAILLLLLLLLLLLLLLLLLLSSS</h2>
+                <div id="getMails"></div>
 
-<!-- Trigger/Open The Modal -->
+
 <button id="myBtn" class="button">Compose Mail</button>
 
-<!-- The Modal -->
-<div id="myMail" class="mail">
 
-  <!-- Modal content -->
+<div id="myMail" class="mail">
   <div class="mail-content">
     <div class="mail-header">
       <span class="close">&times;</span>
