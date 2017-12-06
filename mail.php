@@ -3,7 +3,7 @@
 	 session_start();
 	 
 	 //presets username for testing
-	 $_SESSION['username'] = 'user2';
+	 //$_SESSION['username'] = 'user2';
 	 
 	if (isset($_POST['send'])) {
 		addMsg();
@@ -129,7 +129,7 @@
 		$database->close();
 	 }
 	 
-	 session_destroy();
+	//session_destroy();
 	// $database->close();
 	 
 ?>
