@@ -28,17 +28,6 @@ txtOnImg{
   font-family:'Brush Script MT',cursive;
   font-weight: bold;
 }
-textarea {
-    width:50em;
-    height: 150px;
-    padding: 12px 20px;
-    box-sizing: border-box;
-    border: 2px solid #ccc;
-    border-radius: 4px;
-    background-color: #f8f8f8;
-    font-size: 16px;
-    resize: none;
-}
 .mail {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
@@ -133,8 +122,7 @@ textarea {
 </br>
 </br>
 </br><div class="col-md-4 text-center">
-                <h1>My Inventory</h1>
-                <p id="messOutput"></p>
+                <h1>My Mail</h1>
             </div>
 
 </br>
@@ -143,10 +131,40 @@ textarea {
     <div class="container">
         <div class="row">
             <div class="col-md-8 text-center">
-                <button id="test" onclick="changeText()">List all my items</button>
-                <h2>MY ITEMMMSSSS</h2>
+                MY MAILS
+                Username, time sent, title
+                <h2>MAILLLLLLLLLLLLLLLLLLSSS</h2>
 
+<!-- Trigger/Open The Modal -->
+<button id="myBtn" class="button">Compose Mail</button>
 
+<!-- The Modal -->
+<div id="myMail" class="mail">
+
+  <!-- Modal content -->
+  <div class="mail-content">
+    <div class="mail-header">
+      <span class="close">&times;</span>
+
+    </div>
+    <div class="mail-body">
+
+    </div>
+    <div class="mail-footer">
+            <p id="sentMailTo">
+                <form id="form" method="post" action="onClickSendMail()">
+                    <center><h3>Send Mail</h3></center>
+                    <label>Recipient: &nbsp;</label><input type="text" id="recipient" name="recipientName" minlength="4" maxlength="150"  size="100" required/><br>
+                    <label>Title: &nbsp;</label><input type="text" id="title" name="titleName" minlength="4" maxlength="256"  size="100" required/><br>
+                    <button id="sendMailBtn" class="button">SendMail</button>
+
+                </form>
+            </p>
+
+    </div>
+  </div>
+
+</div>
 
 <script>
 // Get the modal
@@ -174,21 +192,9 @@ window.onclick = function(event) {
         mail_.style.display = "none";
     }
 }
-/*
+
 function onClickSendMail(){
-  var xhttp= new XMLHttpRequest();
-  xhttp.onreadystatechange= function(){
-    if(this.readyState==4 && this.status==200){
-      document.getElementById("messOutput").innerHTML=this.responseText;
-    }
-  };
-  xhttp.open("GET","messageSent.txt",true);
-  xhttp.send();
-  }
-*/
-function changeText()
-{
-  alert("Message Sent!");
+    document.getElementById("sendMailTo").innerHTML="Your message have been sent.";
 }
 </script>
             </div>
@@ -230,22 +236,3 @@ function changeText()
 
 </body>
 </html>
-
-
-
-
-{% extends "layout.html" %}
-{% block content %}
-<center><h3 class="about-title">Your Items</h3>
-    {% for item in items %}
-        <div class="row" style="background-color: beige; border-bottom: solid black; border-top: solid black;">
-            <h4>{{ item['name'] + " - $" + item['price']|string }}</h4>
-            <img src="{{ item['imgurl'] }}"><br/>
-            <b>Details:</b><br/>
-            {{ item['description'] }}<br/><br/>
-            <b>Category: </b>{{ item['category'] }}<br/><br/><br/>
-        </div>
-    {% endfor %}
-    {% if not items %} You have no items. {% endif %}
-</center>
-{% endblock %}
