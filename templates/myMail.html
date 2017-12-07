@@ -143,16 +143,13 @@ textarea {
     <div class="container">
         <div class="row">
             <div class="text-center">
-                MY MAILS
-                Username, time sent, title <p id="testing">yooo</p>
-                <button id="test" onclick="changeText()">Try Me</button>
-            </div>
-        </div>
-        <br/><br/><br/><br/>
-        <div class="row">
-            <div class="text-center">
                 <!-- Trigger/Open The Modal -->
                 <button id="myBtn" class="button">Compose Mail</button>
+            </div>
+        </div>
+        <div id="MailContainer">
+            <div class="row">
+
             </div>
         </div>
     </div>
@@ -209,9 +206,26 @@ $(document).ready(function(){
                 }
             }
         });
-
         e.preventDefault();
     });
+
+    $.ajax({
+        url: "{{ url_for('JSONRequestMail').replace(request.script_root,'') }}",
+        type: "GET",
+        success: function(data){
+            if(data && data.length){
+                for(var i in data){
+                    $('#MailContainer').append("<div class='post-container'><h4 class='post-title'>"
+                    + data[i].subject + "<br/>From " + data[i].sender + "</h4><br/><div class='post-content'>"
+                    + data[i].body+"</div></div>");
+                }
+            }
+            else{
+                $('#MailContainer').append("<div class='post-container'>No one has sent you any messages.</div>");
+            }
+        }
+    });
+    e.preventDefault();
 });
 </script>
 

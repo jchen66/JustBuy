@@ -139,11 +139,6 @@ textarea {
 
 </br>
 </br>
-<section>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-8 text-center">
-                <!--<button id="test" onclick="changeText()">List all my items</button>-->
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script type="application/javascript">
@@ -155,7 +150,7 @@ textarea {
             success: function(data){
 
                 $('#searchItems').empty();
-                if(data.items & & data.items.length){
+                if(data.items && data.items.length ){
                     for(var item in data.items){
                         $('#inventoryItems').append("<div class='post-container'><h4 class='post-title'> $"+data.items[item].price+" - "+data.items[item].name+"</h3> <div class='post-thumb'><img src='"+data.items[item].imgurl+"'/></div>"+"<div class='post-content'>"+data.items[item].description+"<br>"
 
@@ -194,56 +189,6 @@ textarea {
         });
     });
   </script>
-
-<script>
-// Get the modal
-var mail_ = document.getElementById('myMail');
-
-// Get the button that opens the modal
-var btn = document.getElementById("myBtn");
-
-// Get the <span> element that closes the modal
-var span = document.getElementsByClassName("close")[0];
-
-// When the user clicks the button, open the modal 
-btn.onclick = function() {
-    mail_.style.display = "block";
-}
-
-// When the user clicks on <span> (x), close the modal
-span.onclick = function() {
-    mail_.style.display = "none";
-}
-
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-    if (event.target == mail_) {
-        mail_.style.display = "none";
-    }
-}
-/*
-function onClickSendMail(){
-  var xhttp= new XMLHttpRequest();
-  xhttp.onreadystatechange= function(){
-    if(this.readyState==4 && this.status==200){
-      document.getElementById("messOutput").innerHTML=this.responseText;
-    }
-  };
-  xhttp.open("GET","messageSent.txt",true);
-  xhttp.send();
-  }
-*/
-function changeText()
-{
-  alert("Message Sent!");
-}
-</script>
-            </div>
-        </div><!--end row-->
-    </div><!--end container-->
-    <br>
-    <br>
-</section>
 
 <div id="inventoryItems">
   <!--update new data-->
