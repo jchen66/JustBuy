@@ -10,6 +10,21 @@ mark{
   position:relative;
   background-size: 100px 100px;
 } 
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: none;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
 gameName{
   font-size:35px;
   font-weight:bold;
@@ -107,6 +122,31 @@ textarea {
   <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
   <title>Your Profile</title>
+  <script type="application/javascript">
+    $(document).ready(function(){
+      $("form").submit(function(e){
+        $.ajax({
+          url:"{{ url_for('receiveSearchForm').replace(request.script_root,'') }}",
+          type:'POST',
+          data: $('form').serialize(),
+          success:function(data){
+            $('#getMails').empty();
+            if(data.items && data.items.length){
+              for(var item in data.items){
+                $('#getMails').append("<table><tr><th>Sender</th><th>Title</th><th>Content</th></tr><tr><th>"+data.items[item].senderID+"</th><th>"+data.items[item].title+"</th><th>"+data.items[item].senderID.subStr(0,25)+"...</th></tr></table>");
+              }
+            }
+            else{
+              $('#getMails').append("<div class='post-container'>No mails found.</div>");
+            }
+          }
+
+        });
+        e.preventDefault();
+      });
+    });
+
+  </script>
   
 </head>
 <div>
@@ -132,9 +172,8 @@ textarea {
 </br>
 </br>
 </br>
-</br><div class="text-center">
+</br><div class="col-md-4 text-center">
                 <h1>My Mail</h1>
-                <p id="messOutput"></p>
             </div>
 
 </br>
@@ -142,24 +181,15 @@ textarea {
 <section>
     <div class="container">
         <div class="row">
-            <div class="text-center">
-                <!-- Trigger/Open The Modal -->
-                <button id="myBtn" class="button">Compose Mail</button>
-            </div>
-        </div>
-        <div id="MailContainer">
-            <div class="row">
-
-            </div>
-        </div>
-    </div>
-</section>
+            <div class="col-md-8 text-center">
+                MY MAILS
+                <div id="getMails"></div>
 
 
-<!-- The Modal -->
+<button id="myBtn" class="button">Compose Mail</button>
+
+
 <div id="myMail" class="mail">
-
-  <!-- Modal content -->
   <div class="mail-content">
     <div class="mail-header">
       <span class="close">&times;</span>
@@ -168,66 +198,22 @@ textarea {
     <div class="mail-body">
 
     </div>
-    <div class="mail-footer text-center">
+    <div class="mail-footer">
             <p id="sentMailTo">
-                <form id="form" method="post" action="{{ url_for('receiveSendMail').replace(request.script_root,'') }}">
+                <form id="form" method="post">
                     <center><h3>Send Mail</h3></center>
-                    <div id="errors"></div>
-                    <label>Recipient: &nbsp;</label><input type="text" id="recipient" name="recipient" minlength="8" maxlength="32"  size="100" required/><br>
-                    <label>Subject: &nbsp;</label><input type="text" id="subject" name="subject" maxlength="256"  size="100" /><br>
-                    <textarea name="body" maxlength="65535"></textarea><br>
-                    <input class="button" type="submit" value="Send">
+                    <label>Recipient: &nbsp;</label><input type="text" id="recipient" name="recipientName" minlength="4" maxlength="150"  size="100" required/><br>
+                    <label>Title: &nbsp;</label><input type="text" id="title" name="titleName" minlength="4" maxlength="256"  size="100" required/><br>
+                    <textarea> sooomthieng</textarea><br>
+                    <button id="sendMailBtn" class="button" onclick="changeText()">SendMail</button>
+
                 </form>
             </p>
+
     </div>
   </div>
 
 </div>
-
-<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-<script type="application/javascript">
-$(document).ready(function(){
-    $("form").submit(function(e){
-        var form = this;
-        $.ajax({
-            url: "{{ url_for('receiveSendMail').replace(request.script_root,'') }}",
-            type: "POST",
-            data: $(this).serialize(),
-            success: function(data){
-                if(data.success == true){
-                    form.reset();
-                    document.getElementById('myMail').style.display = "none";
-                }
-                if(data.success == false){
-                    $("#errors").empty();
-                    for( var msg in data.messages ){
-                        $("#errors").append("<div>"+data.messages[msg]+"</div>");
-                    }
-                }
-            }
-        });
-        e.preventDefault();
-    });
-
-    $.ajax({
-        url: "{{ url_for('JSONRequestMail').replace(request.script_root,'') }}",
-        type: "GET",
-        success: function(data){
-            if(data && data.length){
-                for(var i in data){
-                    $('#MailContainer').append("<div class='post-container'><h4 class='post-title'>"
-                    + data[i].subject + "<br/>From " + data[i].sender + "</h4><br/><div class='post-content'>"
-                    + data[i].body+"</div></div>");
-                }
-            }
-            else{
-                $('#MailContainer').append("<div class='post-container'>No one has sent you any messages.</div>");
-            }
-        }
-    });
-    e.preventDefault();
-});
-</script>
 
 <script>
 // Get the modal
@@ -254,6 +240,22 @@ window.onclick = function(event) {
     if (event.target == mail_) {
         mail_.style.display = "none";
     }
+}
+/*
+function onClickSendMail(){
+  var xhttp= new XMLHttpRequest();
+  xhttp.onreadystatechange= function(){
+    if(this.readyState==4 && this.status==200){
+      document.getElementById("messOutput").innerHTML=this.responseText;
+    }
+  };
+  xhttp.open("GET","messageSent.txt",true);
+  xhttp.send();
+  }
+*/
+function changeText()
+{
+  alert("Message Sent!");
 }
 </script>
             </div>
