@@ -1,26 +1,36 @@
-Okay so apparently you want to run this shit. This is how:
+First put the project folder in this .zip into your htdocs folder.
 
-First pop the project folder in this .zip into your htdocs folder or some bullshit, it's aaaall the same dawg.
+Next, make sure the shebang in 'index.py' points to a Python35 executable. If you're missing any packages like bcrypt or pymysql, install them with 'pip install' from your terminal (and make sure it's installing it for the right Python install by using 'where pip').
 
-Next, you gotta make sure the shebang in 'index.py' points to a Python35 executable. If you're missing any packages like bcrypt or pymysql, install them with `pip install` from your terminal (and make sure it's installing it for the right Python install by using `where pip`).
+Make sure that your MySQL database has a DB called 'project' and an account called 'root' with no password (though that should be there by default) that has access to this database.
 
-Cooldawg. So now you want to make sure that your MySQL database has a DB called 'project' and an account called 'root' with no password (though that should be there by default) that has access to this database.
+This 'project' DB needs a table called 'users' with columns:
+'ID', which should be set to auto-increment and be of type INT,
+'username', which should be a VARCHAR of max length at least 32, and
+'password', which should also be a VARCHAR of max length at least 60 for bcrypt.
 
-This 'project' DB needs (at least) a table called 'users' with columns:
-`ID`, which should be set to auto-increment and be of type INT,
-`username`, which should be a VARCHAR of max length at least 32, and
-`password`, which should also be a VARCHAR of max length at least 60 (because bcrypt encrypts passwords into a salted hash of length at most 60 or 61, I forget.) I set it to 64 myself, but ye. Don't matter none. Done? Coolbeans.
+A table called 'items' with columns:
+ID, same as above,
+name, varchar(256),
+price, int
+imgurl, text
+description, text
+user, int, and a foreign key for the user 'ID' (from the users table) which cascades when deleted
+category, an enum containing 'clothes', 'electronics', 'food', 'animals', 'furniture', 'miscellaneous'
 
-Next, your Apache server needs to have a few config changes. Pop open the httpd.conf file (you can find it in XAMPP control panel > Apache row > Config dropdown menu > httpd.conf). Make sure that this line: "AddHandler cgi-script .cgi .pl .asp" has an extra ".py" at the end, though we can always rename 'index.py' to 'index.cgi'.
+A table called messages with columns:
+ID, same as above,
+subject, tinytext
+sender, varchar(32), foreign key for 'username' (from users table)
+recipient, same as sender,
+body, text
 
-ANOTHER CONFIG CHANGE! Go to the httpd-vhosts.conf file now, which isn't listed in the XAMPP control panel, but should be in "path\to\xampp\apache\conf\extra\httpd-vhosts.conf". Copy paste the following at the end of it all:
+Open the httpd.conf file (you can find it in XAMPP control panel > Apache row > Config dropdown menu > httpd.conf). Make sure that this line: "AddHandler cgi-script .cgi .pl .asp" has an extra ".py" at the end, though we can always rename 'index.py' to 'index.cgi'.
+
+Go to the httpd-vhosts.conf file now, which isn't listed in the XAMPP control panel, but should be in "path\to\xampp\apache\conf\extra\httpd-vhosts.conf". Copy paste the following at the end of it all:
 
 <VirtualHost *:80>
-    ##ServerAdmin webmaster@dummy-host2.example.com
     DocumentRoot "C:/xampp/htdocs/project"
-    ##ServerName dummy-host2.example.com
-    ##ErrorLog "logs/dummy-host2.example.com-error.log"
-    ##CustomLog "logs/dummy-host2.example.com-access.log" common
 </VirtualHost>
 
 <VirtualHost *:443>
@@ -32,4 +42,4 @@ ANOTHER CONFIG CHANGE! Go to the httpd-vhosts.conf file now, which isn't listed 
 
 Make sure that the paths actually corresponds to your XAMPP installation.
 
-There's one more step: PROFIT. It's all done and should run properly.
+It's all done and should run properly.
