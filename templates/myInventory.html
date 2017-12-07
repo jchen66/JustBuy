@@ -155,7 +155,7 @@ textarea {
             success: function(data){
 
                 $('#searchItems').empty();
-                if(data.items && data.items.length){
+                if(data.items & & data.items.length){
                     for(var item in data.items){
                         $('#inventoryItems').append("<div class='post-container'><h4 class='post-title'> $"+data.items[item].price+" - "+data.items[item].name+"</h3> <div class='post-thumb'><img src='"+data.items[item].imgurl+"'/></div>"+"<div class='post-content'>"+data.items[item].description+"<br>"
 

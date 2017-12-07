@@ -16,6 +16,48 @@ ITEM_CATEGORIES = ['clothes', 'electronics', 'food', 'animals', 'furniture', 'mi
 def renderIndex():
 	return render_template('myProfile.html')
 
+@app.route('/mail', methods=['GET'])
+@ssl_required
+@login_required
+def renderMail():
+	return render_template('myMail.html')
+
+@app.route('/getmail', methods=['GET'])
+@ssl_required
+@login_required
+def JSONRequestMail():
+	return jsonify(getColumnsFromTable('messages', all=True,
+									   where="recipient = '{}' ORDER BY `ID` DESC".format(session.get('username'))))
+
+@app.route('/mail', methods=['POST'])
+@ssl_required
+@login_required
+def receiveSendMail():
+	result = {}; result['messages'] = []; result['success'] = False
+
+	sender = session.get('username')
+	recipient = request.form.get('recipient')
+	subject = request.form.get('subject') or "No Subject:"
+	body = request.form.get('body')
+
+	if len(subject) > 256:
+		result['messages'].append("Subject must have at most 256 characters.")
+
+	if len(body) > 65535:
+		result['messages'].append("Message must have at most 65,535 characters.")
+
+	if not getColumnsFromTable('users', 'username', where="`username` = '{}'".format(recipient)):
+		result['messages'].append("No such recipient.")
+
+	if result['messages']:
+		return jsonify(result)
+
+	addMessageToDB(subject, sender, recipient, body)
+
+	result['success'] = True
+
+	return jsonify(result)
+
 @app.route('/profile')
 @ssl_required
 @login_required
@@ -108,7 +150,7 @@ def receiveRegisterItem():
 
 	result = []
 
-	if not re.match('^[\w ()]{4,256}$', name):
+	if not re.match('^[\w ()]{3,256}$', name):
 		result.append("Invalid name")
 
 	if len(description) > 65535:
@@ -128,7 +170,7 @@ def receiveRegisterItem():
 	if not result:
 		registerItemToDB(name, price, description, imgfile, session.get('uid'), category)
 	else:
-		return jsonify(result)
+		return jsonify(result)#Fix this, use Jinja for redirect instead.
 
 	return redirect(removeUrlScriptRoot(url_for('renderInventory')))
 
@@ -183,19 +225,39 @@ def receiveRegisterUser():
 
 	return onValid()
 
+def addMessageToDB(subject, sender, recipient, body):
+	try:
+		db = getDB()
+		cursor = db.cursor()
+
+		sql = "INSERT INTO `messages`(`ID`, `subject`, `sender`, `recipient`, `body`) VALUES (NULL, %s, %s, %s, %s)"
+		cursor.execute(sql, (subject, sender, recipient, body))
+		db.commit()
+
+		db.close()
+	except Exception as e:
+		raise e
+
 def searchItemsInDB(query, category, price):
 	items = getColumnsFromTable('items', all=True)
 	result = []
 	for item in items:
 		text = item['name'] + " " + item['description']
 		if item['price'] <= price and (item['category'] == category or category == "all"):
-			if any(re.search(word, text) for word in query):
+			if any(re.search(word, text) for word in query) or not query:
 				result.append(item)
 	return result
 
 def deleteItemFromDB(id):
 	db = getDB()
 	cursor = db.cursor()
+	imgname = getColumnsFromTable('items', 'imgurl', where="`ID` = {}".format(id))[0]['imgurl'].split('/')[2]
+
+	imgname = os.path.join(IMAGE_FOLDER, imgname)
+
+	if os.path.isfile(imgname):
+		os.remove(imgname)
+
 	sql = "DELETE FROM `items` WHERE `id`=%s"
 	cursor.execute(sql, (id))
 	db.commit()
@@ -265,6 +327,6 @@ def renderHandleErrorDebug(e):
 	""" + traceback.format_exc().replace("File", "<br>File") + """</body>
 </html>""", 500
 
-@app.route('/users')
+#@app.route('/users')
 def renderGetUsersJSON():
 	return jsonify( {"users" : getColumnsFromTable("users", "username", "password")} )

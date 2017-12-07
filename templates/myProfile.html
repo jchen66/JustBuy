@@ -77,7 +77,7 @@ txtOnImg{
                 My Items</a>
             </div>
             <div class="col-md-4 text-center">
-                <a href = "URL/CHECK MAIL PAGE"><p><i class="fa fa-envelope-o fa-4x"></i></p>
+                <a href = "{{ url_for('renderMail').replace(request.script_root,'') }}"><p><i class="fa fa-envelope-o fa-4x"></i></p>
                 My Mail</a>
             </div>
         </div><!--end row-->

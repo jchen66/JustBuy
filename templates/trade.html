@@ -96,7 +96,7 @@ txtOnImg{
         <center><h3 class="about-title">Browse</h3></center>
         <center>
           <form id="form" method="post" action="{{ url_for('receiveSearchForm').replace(request.script_root,'') }}">
-            <label>Search: &nbsp;</label><input type="text" id="query" name="query" minlength="0" maxlength="256"  size="65" required/><br/>
+            <label>Search: &nbsp;</label><input type="text" id="query" name="query" minlength="0" maxlength="256"  size="65" /><br/>
             </br>
             <label>Maximum Price: &nbsp;</label><input type="number" min="0" id="price" name="price" /><br/>
             </br>
