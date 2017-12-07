@@ -174,7 +174,7 @@ textarea {
             <li><a href="{{ url_for('renderLogout').replace(request.script_root,'') }}">Log out</a></li>
             <li><a href="{{ url_for('renderPostItemForm').replace(request.script_root,'') }}">Post Item</a></li>
             <li><a href="{{ url_for('renderProfile').replace(request.script_root,'') }}" >Profile</a></li>
-            <li><a href="{{ url_for('renderSearchForm').replace(request.script_root,'') }}">Purchase</a></li>
+            <li><a href="{{ url_for('renderSearchForm').replace(request.script_root,'') }}">Browse</a></li>
         {% else %}
             <li><a href="{{ url_for('renderLoginForm').replace(request.script_root,'') }}">Log in</a></li>
             <li><a href="{{ url_for('renderRegisterForm').replace(request.script_root,'') }}">Register</a></li>
@@ -200,11 +200,10 @@ textarea {
     <div class="container">
         <div class="row">
             <div class="col-md-8 text-center">
-                MY MAILS
+<button id="myBtn" class="button">Compose Mail</button>
                 <div id="getMails"></div>
 
 
-<button id="myBtn" class="button">Compose Mail</button>
 
 
 <div id="myMail" class="mail">
