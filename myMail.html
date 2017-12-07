@@ -18,8 +18,11 @@ table {
 
 td, th {
     border: none;
+    border-left:outset;
+    border-bottom:double;
     text-align: left;
-    padding: 8px;
+    padding-left: 18px;
+    padding-bottom:25px;
 }
 
 tr:nth-child(even) {
@@ -124,28 +127,44 @@ textarea {
   <title>Your Profile</title>
   <script type="application/javascript">
     $(document).ready(function(){
-      $("form").submit(function(e){
         $.ajax({
-          url:"{{ url_for('receiveSearchForm').replace(request.script_root,'') }}",
-          type:'POST',
-          data: $('form').serialize(),
+          url: "{{ url_for('JSONRequestMail').replace(request.script_root,'') }}",
+          type: "GET",
           success:function(data){
             $('#getMails').empty();
-            if(data.items && data.items.length){
-              for(var item in data.items){
-                $('#getMails').append("<table><tr><th>Sender</th><th>Title</th><th>Content</th></tr><tr><th>"+data.items[item].senderID+"</th><th>"+data.items[item].title+"</th><th>"+data.items[item].senderID.subStr(0,25)+"...</th></tr></table>");
+            if(data && data.length){
+              $('#getMails').append("<table><tr><th>Sender</th><th>Subject</th><th>Body</th></tr>");
+              for(var i in data){
+                $('#getMails').append("<tr><th>"+data[i].sender+"</th><th>"+data[i].subject+"</th><th>"+data[i].body+"...</th></tr></table>");
               }
             }
             else{
               $('#getMails').append("<div class='post-container'>No mails found.</div>");
             }
           }
-
+        });
+        $("form").submit(function(e){
+        var form = this;
+        $.ajax({
+            url: "{{ url_for('receiveSendMail').replace(request.script_root,'') }}",
+            type: "POST",
+            data: $(this).serialize(),
+            success: function(data){
+                if(data.success == true){
+                    form.reset();
+                    document.getElementById('myMail').style.display = "none";
+                }
+                if(data.success == false){
+                    $("#errors").empty();
+                    for( var msg in data.messages ){
+                        $("#errors").append("<div>"+data.messages[msg]+"</div>");
+                    }
+                }
+            }
         });
         e.preventDefault();
-      });
     });
-
+});
   </script>
   
 </head>
