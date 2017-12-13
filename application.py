@@ -16,12 +16,14 @@ ITEM_CATEGORIES = ['clothes', 'electronics', 'food', 'animals', 'furniture', 'mi
 def renderIndex():
 	return render_template('myProfile.html')
 
+#The Mailing
 @app.route('/mail', methods=['GET'])
 @ssl_required
 @login_required
 def renderMail():
 	return render_template('myMail.html')
 
+#The Mailbox: looks in the messages database and finds all messages destined for the current user(where the recipient = current logged in user)
 @app.route('/getmail', methods=['GET'])
 @ssl_required
 @login_required
@@ -29,40 +31,49 @@ def JSONRequestMail():
 	return jsonify(getColumnsFromTable('messages', all=True,
 									   where="recipient = '{}' ORDER BY `ID` DESC".format(session.get('username'))))
 
+#Allows user to send mail to another user
+#Requires: a recipient, the message body
+#The title is optional
 @app.route('/mail', methods=['POST'])
 @ssl_required
 @login_required
 def receiveSendMail():
 	result = {}; result['messages'] = []; result['success'] = False
 
-	sender = session.get('username')
+	sender = session.get('username') #the sender is the current logged-in user
 	recipient = request.form.get('recipient')
 	subject = request.form.get('subject') or "No Subject:"
 	body = request.form.get('body')
 
+    #checks if the character limit are respected
 	if len(subject) > 256:
 		result['messages'].append("Subject must have at most 256 characters.")
 
 	if len(body) > 65535:
 		result['messages'].append("Message must have at most 65,535 characters.")
 
+    #checks if receiver exists
 	if not getColumnsFromTable('users', 'username', where="`username` = '{}'".format(recipient)):
 		result['messages'].append("No such recipient.")
 
 	if result['messages']:
 		return jsonify(result)
 
-	addMessageToDB(subject, sender, recipient, body)
+	addMessageToDB(subject, sender, recipient, body) #appends the current message to messages database
 
 	result['success'] = True
 
 	return jsonify(result)
 
+#access to the profile page
 @app.route('/profile')
 @ssl_required
 @login_required
 def renderProfile():
 	return render_template("myProfile.html")
+
+#the user can view their inventory containing items that they have posted
+#Looks into the items database for all items where the user = current logged in user
 
 @app.route('/inventory', methods=['GET'])
 @ssl_required
@@ -77,6 +88,7 @@ def JSONRequestInventory():
 	resp = { "items" : getColumnsFromTable('items', all=True, where='`user` =' + str(session['uid'])) }
 	return jsonify(resp)
 
+#The user can delete an item currently in their inventory.
 @app.route('/deleteitem', methods=['POST'])
 @ssl_required
 @login_required
@@ -85,11 +97,12 @@ def receiveDeleteItem():
 	try:
 		id = int(request.form.get('id'))
 
+        
 		if session['uid'] != getColumnsFromTable('items', 'user', where='`id` =' + str(id))[0]['user']:
 			resp['success'] = False
 			return jsonify(resp)
 
-		deleteItemFromDB(id)
+		deleteItemFromDB(id) #deletes the item from the items database
 		resp['success'] = True
 
 	except Exception as e:
@@ -98,23 +111,28 @@ def receiveDeleteItem():
 
 	return jsonify(resp)
 
+#The user can search for items for sale in the database
 @app.route('/browse', methods=['GET'])
 @ssl_required
 @login_required
 def renderSearchForm():
 	return render_template("trade.html")
 
+#The user can enter 3 fields to search:
+#query string
+#price limit
+#category
 @app.route('/browse', methods=['POST'])
 @ssl_required
 @login_required
 def receiveSearchForm():
 	resp = { 'items':[] }
 	try:
-		query = re.split('[^a-zA-Z]', request.form.get('query'))
-		price = int(request.form.get('price')) if request.form.get('price') else sys.maxsize
-		category = request.form.get('category') if request.form.get('category') in ITEM_CATEGORIES else "all"
+		query = re.split('[^a-zA-Z]', request.form.get('query').lower()) #the query string
+		price = int(request.form.get('price')) if request.form.get('price') else sys.maxsize #the price limit
+		category = request.form.get('category') if request.form.get('category') in ITEM_CATEGORIES else "all" #the selected category, this is optional
 
-		resp['items'] = searchItemsInDB(query, category, price)
+		resp['items'] = searchItemsInDB(query, category, price) #search for the items corresponding to the user's request in the database
 
 		for item in resp['items']:
 			item['user'] = getColumnsFromTable('users', 'username', where="id = " + str(item['user']))[0]['username']
@@ -124,6 +142,7 @@ def receiveSearchForm():
 
 	return jsonify(resp)
 
+#By logging out, the session fields are reset to None
 @app.route('/logout')
 @ssl_required
 def renderLogout():
@@ -131,6 +150,8 @@ def renderLogout():
 	session['username'] = None
 	return redirect(removeUrlScriptRoot(url_for('renderIndex')))
 
+#The user can post an ad of an item for sale through this functionality
+#if successful added to the database, the item will show up in their inventory
 @app.route('/postitem', methods=['GET'])
 @ssl_required
 @login_required
@@ -142,14 +163,15 @@ def renderPostItemForm():
 @login_required
 def receiveRegisterItem():
 
-	name = request.form.get('name')
-	price = int(request.form.get('price'))
-	description = request.form.get('description')
-	category = request.form.get('category')
-	imgfile = request.files.get('img')
+	name = request.form.get('name') #name/title of the item
+	price = int(request.form.get('price')) #asking price
+	description = request.form.get('description') #item description, used in search
+	category = request.form.get('category') #item category, used in search
+	imgfile = request.files.get('img') #image representing the item for sale
 
 	result = []
 
+    #performs some checks to validate the previous fields
 	if not re.match('^[\w ()]{3,256}$', name):
 		result.append("Invalid name")
 
@@ -174,11 +196,13 @@ def receiveRegisterItem():
 
 	return redirect(removeUrlScriptRoot(url_for('renderInventory')))
 
+#All users must be logged in to use any functionality on the website, else they will be redirected to the main page.
 @app.route('/login', methods=['GET'])
 @ssl_required
 def renderLoginForm():
 	return render_template("login.html") if session.get('uid') is None else redirect(removeUrlScriptRoot(url_for('renderPostItemForm')))
 
+#User login, validates username and correspoding password.
 @app.route('/login', methods=['POST'])
 @ssl_required
 def receiveLoginUser():
@@ -197,18 +221,21 @@ def receiveLoginUser():
 
 	return onInvalid()
 
+#New user registration
 @app.route('/register', methods=['GET'])
 @ssl_required
 def renderRegisterForm():
 	return render_template("register.html")
 
+#The registration asks for two fields: username and password
+#once validated, adds the new user to the database
 @app.route('/register', methods=['POST'])
 @ssl_required
 def receiveRegisterUser():
 	username = request.form['username']
 	password = request.form['password']
 
-	validuser = isValidUsername(username)
+	validuser = isValidUsername(username) #username should not already be present in database
 	validpass = isValidPassword(password)
 
 	onInvalid = lambda: redirect(removeUrlScriptRoot(url_for('renderRegisterForm')))
@@ -217,14 +244,16 @@ def receiveRegisterUser():
 	if not validuser or not validpass:
 		return onInvalid()
 
-	registerUserToDB(username, password)
+	registerUserToDB(username, password) #updates database
 
+    #If successful, the new user is logged in automatically
 	row = getColumnsFromTable('users', 'id', where="username = '" + username + "'")[0]
 	session['uid'] = row['id']
 	session['username'] = username
 
 	return onValid()
 
+#part of the mailing system. This adds a new message into the messages database.
 def addMessageToDB(subject, sender, recipient, body):
 	try:
 		db = getDB()
@@ -237,17 +266,20 @@ def addMessageToDB(subject, sender, recipient, body):
 		db.close()
 	except Exception as e:
 		raise e
-
+		
+#This looks for items in the items database that corresponds to the user's request according to the query, category and price entered
 def searchItemsInDB(query, category, price):
 	items = getColumnsFromTable('items', all=True)
 	result = []
 	for item in items:
-		text = item['name'] + " " + item['description']
+		text = (item['name'] + " " + item['description']).lower()
 		if item['price'] <= price and (item['category'] == category or category == "all"):
 			if any(re.search(word, text) for word in query) or not query:
 				result.append(item)
 	return result
 
+#If the user wishes to remove an item from their inventory.
+#This deletes the selected item from the items database
 def deleteItemFromDB(id):
 	db = getDB()
 	cursor = db.cursor()
@@ -263,6 +295,8 @@ def deleteItemFromDB(id):
 	db.commit()
 	db.close()
 
+
+#Part of the registration. Adds the new user to the users database
 def registerUserToDB(username, password):
 	cryptpass = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt( 12 ))
 
@@ -276,6 +310,7 @@ def registerUserToDB(username, password):
 	except Exception as e:
 		raise e
 
+#Adds requested item into the items database with its fields: name, price, description, image, category and ID
 def registerItemToDB(name, price, description, imgfile, uid, category):
 	try:
 		db = getDB()
@@ -293,6 +328,7 @@ def registerItemToDB(name, price, description, imgfile, uid, category):
 	except Exception as e:
 		raise e
 
+#used to look up the desired database in the desired column
 def getColumnsFromTable(table, *columns, all=False, where=None):
 	try:
 		db = getDB()
@@ -327,6 +363,6 @@ def renderHandleErrorDebug(e):
 	""" + traceback.format_exc().replace("File", "<br>File") + """</body>
 </html>""", 500
 
-#@app.route('/users')
+@app.route('/users')
 def renderGetUsersJSON():
 	return jsonify( {"users" : getColumnsFromTable("users", "username", "password")} )
